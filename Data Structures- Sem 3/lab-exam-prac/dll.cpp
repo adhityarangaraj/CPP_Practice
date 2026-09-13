@@ -3,99 +3,327 @@ using namespace std;
 
 struct node
 {
-    int data;
-    node*fore;
-    node*back;
+int data;
+node*fore;
+node*back;
 };
 
 struct headnode
 {
+
     int count;
-    node*front;
+    node*head;
     node*rear;
 };
 
 class DLL
-{
+{  
     headnode*list;
-
+   
+    public:
     DLL()
     {
         list=new headnode();
         list->count=0;
-        list->front=NULL;
+        list->head=NULL;
         list->rear=NULL;
     }
-
-    void insert(int data)
+   
+    bool insert(int data)
     {
-        node*temp=list->front;
-        node*prev=NULL;
         node*nn=new node();
         nn->data=data;
-
-        list->count++;
-
-        if(temp==NULL)
-        {
-            list->front=nn;
-            list->rear=nn;
-            nn->back=NULL;
-            nn->fore=NULL;
-            return;
-        }
-
-        else if(temp->data>data)
-        {
-            nn->fore=list->front;
-            list->front=nn;
-            nn->back=NULL;
-            return;
-        }
-
-        while(temp!=NULL && temp->data<data)
-        {
-            prev=temp;
-            temp=temp->fore;
-        }
-
-        nn->fore=prev->fore;
-        prev->fore=nn;
-        nn->back=prev;
-        nn->fore->back=nn;
-
-    }
-
-    bool delete_dll(int data)
-    {
-        node*temp=list->front;
+        node*temp=list->head;
         node*prev=NULL;
-
-        if(temp==NULL)
-            return false;
-
-        else if(temp->data==data)
+       
+        while(temp!=NULL && data>temp->data)
         {
-            list->front=temp->fore;
-            temp->fore->back=NULL;
-            delete temp;
-            list->count--;
+           prev=temp;
+           temp=temp->fore;
+        }
+       
+        if(prev==NULL)
+        {
+            nn->fore=list->head;
+            nn->back=NULL;
+            list->head=nn;
+            list->count++;
             return true;
         }
-
-        while(temp!=NULL)
+       
+        else
+        {
+            nn->back=prev;
+            nn->fore=prev->fore;
+            prev->fore=nn;
+            list->count++;
+           
+            if(temp==NULL)
+            {
+                list->rear=nn;
+            }
+           
+            return true;
+        }
+       
+        return false;
+    }
+   
+    bool delete_dll(int data)
+    {
+        node*temp=list->head;
+        while(temp!=NULL && data>=temp->data)
         {
             if(temp->data==data)
             {
-                prev->fore=temp->fore;
-                temp->fore->back=prev;
+                if(temp->back==NULL)
+                    list->head=temp->fore;
+                else
+                    temp->back->fore=temp->fore;
+               
+                if(temp->fore!=NULL)
+                    temp->fore->back=temp->back;
+                else
+                    list->rear=temp->back;
+                   
                 list->count--;
                 delete temp;
-                return true;
+                return true;  
             }
+           
             temp=temp->fore;
-            prev=temp;
         }
         return false;
     }
+   
+    bool emptydll()
+    {
+        return list->count==0;  
+    }
+   
+    int count()
+    {
+        return list->count;
+    }
+   
+    void display_htor()
+    {
+        node*temp=list->head;
+       
+        cout<<"HEAD TO REAR:\n";
+        while(temp!=NULL)
+        {
+            cout<<temp->data<<"->";
+            temp=temp->fore;
+        }
+        cout<<"NULL\n";
+    }
+   
+    void display_rtoh()
+    {
+        node*temp=list->rear;
+       
+        cout<<"REAR TO HEAD:\n";
+        while(temp!=NULL)
+        {
+            cout<<temp->data<<"->";
+            temp=temp->back;
+        }
+        cout<<"NULL\n";
+    }
+   
+    bool search_htor(int data,int& pos)
+    {
+        node*temp=list->head;
+        int count=0;
+       
+        while(temp!=NULL && temp->data<=data)
+        {
+            if(temp->data==data)
+            {
+                pos=count;
+                return true;
+            }
+            temp=temp->fore;
+            count++;
+        }
+        pos=-1;
+        return false;
+    }
+   
+    bool search_rtoh(int data,int& pos)
+    {
+        node*temp=list->rear;
+        int count=(list->count)-1;
+       
+        while(temp!=NULL && temp->data>=data)
+        {
+            if(temp->data==data)
+            {
+                pos=count;
+                return true;
+            }
+            temp=temp->back;
+            count--;
+        }
+       
+        pos=-1;
+        return false;
+    }
+   
+    void destroy()
+    {
+        node*temp=list->head;
+        node*temp1=NULL;
+       
+        while(!emptydll())
+        {
+            temp1=temp->fore;
+            delete temp;
+            temp=temp1;
+            list->count--;
+        }
+    }
 };
+
+int main()
+{
+    int ch;
+    DLL*l=NULL;
+    do
+    {
+        cout<<"\n1.Create\n2.Insert\n3.Delete\n4.Searchfromhead\n5.Searchfromrear\n6.Count\n7.EmptyList\n8.Displayfromhead\n9.Displayfromrear\n10.Destroy\n11.Exit\nOption:";
+       
+        cin>>ch;
+        cout<<"\n";
+       
+        if(ch<1 || ch>11)
+        {
+            cout<<"Invalid choice\n";
+            continue;
+        }
+       
+        if(ch!=1 && l==NULL)
+        {
+            cout<<"Create the list first\n";
+            continue;
+        }
+           
+        switch(ch)
+        {
+            case 1:
+            {
+                if(l!=NULL)
+                {
+                    cout<<"List already exists\n";
+                }
+                else
+                {
+                    l=new DLL();
+                    cout<<"List created  sucessfully\n";
+                }
+               
+                break;
+            }
+           
+            case 2:
+            {
+                int temp;
+                cout<<"Enter data to be inserted:";
+                cin>>temp;
+               
+                if(l->insert(temp))
+                    cout<<temp<<" inserted sucessfully\n";
+                else
+                    cout<<"Insertion failed(Memory Not Available)\n";
+                   
+                break;
+            }
+           
+            case 3:
+            {
+                int data;
+                cout<<"Enter data to be deleted:";
+                cin>>data;
+               
+                if(l->delete_dll(data))
+                    cout<<"Element deleted successfully\n";
+                else
+                    cout<<"Element not found in the list\n";
+               
+                break;
+            }
+           
+            case 4:
+            {
+               int data,pos;
+               cout<<"Enter element to be searched:";
+               cin>>data;
+               
+               if(l->search_htor(data,pos))
+               {
+                    cout<<data<<" is found at position:"<<pos<<endl;
+               }
+               
+               else
+                cout<<data<<" not present in the list"<<endl;
+               
+               break;
+            }
+           
+             case 5:
+             {
+               int data,pos;
+               cout<<"Enter element to be searched:";
+               cin>>data;
+               
+               if(l->search_htor(data,pos))
+               {
+                    cout<<data<<" is found at position:"<<pos<<endl;
+               }
+               
+               else
+                cout<<data<<" not present in the list"<<endl;
+               
+               break;
+             }
+             
+             case 6:
+             {
+                cout<<"No of elements in the DLL is:"<<l->count()<<endl;
+                break;
+             }
+             
+             case 7:
+             {
+                if(l->emptydll())
+                    cout<<"List is empty(TRUE)\n";
+                else
+                    cout<<"List is not empty(FALSE)\n";
+                   
+                break;
+             }
+             
+             case 8:
+             {
+                l->display_htor();
+                break;
+             }
+             
+             case 9:
+             {
+                l->display_rtoh();
+                break;
+             }    
+             
+             case 10:
+             {
+                l->destroy();
+                cout<<"List is destroyed successfully\n";
+                break;
+             }
+        }
+       
+    }while(ch!=11);
+    return 0;
+}

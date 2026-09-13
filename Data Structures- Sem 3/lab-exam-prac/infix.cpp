@@ -114,9 +114,9 @@ string convert(string infix)
 int main()
 {
     string infix;
-    cout<<"ENTER INFIX:";
+    cout<<"\nEnter Infix expression:";
     getline(cin,infix);
     
-    cout<<"Postfix is :"<<convert(infix)<<endl;
+    cout<<"Postfix expression is :"<<convert(infix)<<endl;
     return 0;
 }
