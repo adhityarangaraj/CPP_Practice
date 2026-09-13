@@ -3,14 +3,13 @@ using namespace std;
 
 struct node
 {
-int data;
-node*fore;
-node*back;
+    int data;
+    node*fore;
+    node*back;
 };
 
 struct headnode
 {
-
     int count;
     node*head;
     node*rear;
@@ -38,14 +37,24 @@ class DLL
        
         while(temp!=NULL && data>temp->data)
         {
-           prev=temp;
-           temp=temp->fore;
+            prev=temp;
+            temp=temp->fore;
         }
        
         if(prev==NULL)
         {
             nn->fore=list->head;
             nn->back=NULL;
+           
+            if(list->head!=NULL)
+            {
+                list->head->back=nn;
+            }
+            else
+            {
+                list->rear=nn;
+            }
+           
             list->head=nn;
             list->count++;
             return true;
@@ -56,13 +65,17 @@ class DLL
             nn->back=prev;
             nn->fore=prev->fore;
             prev->fore=nn;
-            list->count++;
            
-            if(temp==NULL)
+            if(temp!=NULL)
+            {
+                temp->back=nn;
+            }
+            else
             {
                 list->rear=nn;
             }
            
+            list->count++;
             return true;
         }
        
@@ -72,19 +85,28 @@ class DLL
     bool delete_dll(int data)
     {
         node*temp=list->head;
+       
         while(temp!=NULL && data>=temp->data)
         {
             if(temp->data==data)
             {
                 if(temp->back==NULL)
+                {
                     list->head=temp->fore;
+                }
                 else
+                {
                     temp->back->fore=temp->fore;
+                }
                
                 if(temp->fore!=NULL)
+                {
                     temp->fore->back=temp->back;
+                }
                 else
+                {
                     list->rear=temp->back;
+                }
                    
                 list->count--;
                 delete temp;
@@ -93,6 +115,7 @@ class DLL
            
             temp=temp->fore;
         }
+       
         return false;
     }
    
@@ -111,11 +134,13 @@ class DLL
         node*temp=list->head;
        
         cout<<"HEAD TO REAR:\n";
+       
         while(temp!=NULL)
         {
             cout<<temp->data<<"->";
             temp=temp->fore;
         }
+       
         cout<<"NULL\n";
     }
    
@@ -124,11 +149,13 @@ class DLL
         node*temp=list->rear;
        
         cout<<"REAR TO HEAD:\n";
+       
         while(temp!=NULL)
         {
             cout<<temp->data<<"->";
             temp=temp->back;
         }
+       
         cout<<"NULL\n";
     }
    
@@ -144,9 +171,11 @@ class DLL
                 pos=count;
                 return true;
             }
+           
             temp=temp->fore;
             count++;
         }
+       
         pos=-1;
         return false;
     }
@@ -163,6 +192,7 @@ class DLL
                 pos=count;
                 return true;
             }
+           
             temp=temp->back;
             count--;
         }
@@ -183,6 +213,9 @@ class DLL
             temp=temp1;
             list->count--;
         }
+       
+        list->head=NULL;
+        list->rear=NULL;
     }
 };
 
@@ -190,6 +223,7 @@ int main()
 {
     int ch;
     DLL*l=NULL;
+   
     do
     {
         cout<<"\n1.Create\n2.Insert\n3.Delete\n4.Searchfromhead\n5.Searchfromrear\n6.Count\n7.EmptyList\n8.Displayfromhead\n9.Displayfromrear\n10.Destroy\n11.Exit\nOption:";
@@ -220,7 +254,7 @@ int main()
                 else
                 {
                     l=new DLL();
-                    cout<<"List created  sucessfully\n";
+                    cout<<"List created successfully\n";
                 }
                
                 break;
@@ -233,9 +267,13 @@ int main()
                 cin>>temp;
                
                 if(l->insert(temp))
-                    cout<<temp<<" inserted sucessfully\n";
+                {
+                    cout<<temp<<" inserted successfully\n";
+                }
                 else
+                {
                     cout<<"Insertion failed(Memory Not Available)\n";
+                }
                    
                 break;
             }
@@ -247,83 +285,96 @@ int main()
                 cin>>data;
                
                 if(l->delete_dll(data))
+                {
                     cout<<"Element deleted successfully\n";
+                }
                 else
+                {
                     cout<<"Element not found in the list\n";
+                }
                
                 break;
             }
            
             case 4:
             {
-               int data,pos;
-               cout<<"Enter element to be searched:";
-               cin>>data;
+                int data,pos;
+                cout<<"Enter element to be searched:";
+                cin>>data;
                
-               if(l->search_htor(data,pos))
-               {
+                if(l->search_htor(data,pos))
+                {
                     cout<<data<<" is found at position:"<<pos<<endl;
-               }
+                }
                
-               else
-                cout<<data<<" not present in the list"<<endl;
+                else
+                {
+                    cout<<data<<" not present in the list"<<endl;
+                }
                
-               break;
+                break;
             }
            
-             case 5:
-             {
-               int data,pos;
-               cout<<"Enter element to be searched:";
-               cin>>data;
+            case 5:
+            {
+                int data,pos;
+                cout<<"Enter element to be searched:";
+                cin>>data;
                
-               if(l->search_htor(data,pos))
-               {
+                if(l->search_rtoh(data,pos))
+                {
                     cout<<data<<" is found at position:"<<pos<<endl;
-               }
+                }
                
-               else
-                cout<<data<<" not present in the list"<<endl;
+                else
+                {
+                    cout<<data<<" not present in the list"<<endl;
+                }
                
-               break;
-             }
+                break;
+            }
              
-             case 6:
-             {
+            case 6:
+            {
                 cout<<"No of elements in the DLL is:"<<l->count()<<endl;
                 break;
-             }
+            }
              
-             case 7:
-             {
+            case 7:
+            {
                 if(l->emptydll())
+                {
                     cout<<"List is empty(TRUE)\n";
+                }
                 else
+                {
                     cout<<"List is not empty(FALSE)\n";
+                }
                    
                 break;
-             }
+            }
              
-             case 8:
-             {
+            case 8:
+            {
                 l->display_htor();
                 break;
-             }
+            }
              
-             case 9:
-             {
+            case 9:
+            {
                 l->display_rtoh();
                 break;
-             }    
+            }    
              
-             case 10:
-             {
+            case 10:
+            {
                 l->destroy();
                 cout<<"List is destroyed successfully\n";
                 break;
-             }
+            }
         }
        
     }while(ch!=11);
+   
     return 0;
 }
